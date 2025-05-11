@@ -233,34 +233,76 @@ SELECT
 FROM Fan AS f1, FriendOf, Fan AS f2
 WHERE MATCH(f1-(FriendOf)->f2);
 
--- Таблица всех узлов графа
+-- Объединенный запрос всех связей графа
 SELECT 
-    'Fan' AS NodeType,
-    id AS NodeId,
-    name AS NodeName,
-    CONCAT(N'Fan', id) AS [Node image name],
-    NULL AS AdditionalInfo
-FROM Fan
+    f1.id AS IdSource,
+    f1.name AS Source,
+    'Fan' AS SourceType,
+    CONCAT('Fan', f1.id, '.webp') AS [Source image name],
+    f2.id AS IdTarget,
+    f2.name AS Target,
+    'Fan' AS TargetType,
+    CONCAT('Fan', f2.id, '.webp') AS [Target image name],
+    'FriendOf' AS EdgeType,
+    'Дружит с' AS EdgeLabel,
+    1 AS Weight,
+    '#4CAF50' AS EdgeColor  -- Зеленый для дружеских связей
+FROM Fan AS f1, FriendOf, Fan AS f2
+WHERE MATCH(f1-(FriendOf)->f2)
 
 UNION ALL
 
 SELECT 
-    'Club' AS NodeType,
-    id AS NodeId,
-    name AS NodeName,
-    CONCAT(N'Club', id) AS [Node image name],
-    (SELECT name FROM Country WHERE id = Club.country_id) AS AdditionalInfo
-FROM Club
+    f.id AS IdSource,
+    f.name AS Source,
+    'Fan' AS SourceType,
+    CONCAT('Fan', f.id, '.webp') AS [Source image name],
+    c.id AS IdTarget,
+    c.name AS Target,
+    'Country' AS TargetType,
+    CONCAT('Country', c.id, '.webp') AS [Target image name],
+    'LivesIn' AS EdgeType,
+    'Живет в' AS EdgeLabel,
+    1 AS Weight,
+    '#2196F3' AS EdgeColor  -- Синий для проживания
+FROM Fan AS f, LivesIn, Country AS c
+WHERE MATCH(f-(LivesIn)->c)
 
 UNION ALL
 
 SELECT 
-    'Country' AS NodeType,
-    id AS NodeId,
-    name AS NodeName,
-    CONCAT(N'Country', id) AS [Node image name],
-    continent AS AdditionalInfo
-FROM Country;
+    f.id AS IdSource,
+    f.name AS Source,
+    'Fan' AS SourceType,
+    CONCAT('Fan', f.id, '.webp') AS [Source image name],
+    cl.id AS IdTarget,
+    cl.name AS Target,
+    'Club' AS TargetType,
+    CONCAT('Club', cl.id, '.webp') AS [Target image name],
+    'Supports' AS EdgeType,
+    'Болеет за' AS EdgeLabel,
+    1 AS Weight,
+    '#FF5722' AS EdgeColor  -- Оранжевый для поддержки клуба
+FROM Fan AS f, Supports, Club AS cl
+WHERE MATCH(f-(Supports)->cl)
+
+UNION ALL
+
+SELECT 
+    cl.id AS IdSource,
+    cl.name AS Source,
+    'Club' AS SourceType,
+    CONCAT('Club', cl.id, '.webp') AS [Source image name],
+    c.id AS IdTarget,
+    c.name AS Target,
+    'Country' AS TargetType,
+    CONCAT('Country', c.id, '.webp') AS [Target image name],
+    'LocatedIn' AS EdgeType,
+    'Расположен в' AS EdgeLabel,
+    2 AS Weight,  -- Более толстая линия для этого типа связи
+    '#9C27B0' AS EdgeColor  -- Фиолетовый для расположения клуба
+FROM Club AS cl, LocatedIn, Country AS c
+WHERE MATCH(cl-(LocatedIn)->c);
 
 SELECT @@SERVERNAME
 --FootballFanNetwork
