@@ -224,9 +224,6 @@ SELECT
 FROM Club, LocatedIn, Country
 WHERE MATCH(Club-(LocatedIn)->Country);
 
-
-
-
 --Дружба между фанатами (двунаправленная визуализация)
 SELECT 
     f1.name AS Fan1Name,
@@ -236,32 +233,34 @@ SELECT
 FROM Fan AS f1, FriendOf, Fan AS f2
 WHERE MATCH(f1-(FriendOf)->f2);
 
+-- Таблица всех узлов графа
+SELECT 
+    'Fan' AS NodeType,
+    id AS NodeId,
+    name AS NodeName,
+    CONCAT(N'Fan', id) AS [Node image name],
+    NULL AS AdditionalInfo
+FROM Fan
 
-
-
---Фанаты, клубы и страны клубов
+UNION ALL
 
 SELECT 
-    Fan.name AS FanName,
-    CONCAT(N'Fan', Fan.id, '.webp') AS [Fan Image],
-    Club.name AS ClubName,
-    CONCAT(N'Club', Club.id, '.webp') AS [Club Image],
-    Country.name AS CountryName,
-    CONCAT(N'Country', Country.id, '.webp') AS [Country Image]
-FROM Fan, Supports, Club, LocatedIn, Country
-WHERE MATCH(Fan-(Supports)->Club-(LocatedIn)->Country);
+    'Club' AS NodeType,
+    id AS NodeId,
+    name AS NodeName,
+    CONCAT(N'Club', id) AS [Node image name],
+    (SELECT name FROM Country WHERE id = Club.country_id) AS AdditionalInfo
+FROM Club
 
+UNION ALL
 
-
-
-	--Клубы и фанаты (для графовой визуализации поддержки)
 SELECT 
-    Fan.id AS SourceID,
-    CONCAT(N'Fan', Fan.id, '.webp') AS [Fan Image],
-    Club.id AS TargetID,
-    CONCAT(N'Club', Club.id, '.webp') AS [Club Image],
-    'Supports' AS Relationship
-FROM Fan, Supports, Club
-WHERE MATCH(Fan-(Supports)->Club);
+    'Country' AS NodeType,
+    id AS NodeId,
+    name AS NodeName,
+    CONCAT(N'Country', id) AS [Node image name],
+    continent AS AdditionalInfo
+FROM Country;
 
-
+SELECT @@SERVERNAME
+--FootballFanNetwork
