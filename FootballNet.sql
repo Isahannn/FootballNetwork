@@ -202,7 +202,7 @@ SELECT
     Fan.name AS FanName,
     CONCAT(N'Fan', Fan.id, '.webp') AS [Fan Image],
     Country.name AS CountryName,
-    CONCAT(N'Country', Country.id, '.png') AS [Country Image]
+    CONCAT(N'Country', Country.id, '.webp') AS [Country Image]
 FROM Fan, LivesIn, Country
 WHERE MATCH(Fan-(LivesIn)->Country);
 
@@ -211,16 +211,16 @@ SELECT
     Fan.name AS FanName,
     CONCAT(N'Fan', Fan.id, '.webp') AS [Fan Image],
     Club.name AS ClubName,
-    CONCAT(N'Club', Club.id, '.png') AS [Club Image]
+    CONCAT(N'Club', Club.id, '.webp') AS [Club Image]
 FROM Fan, Supports, Club
 WHERE MATCH(Fan-(Supports)->Club);
 
 --Клубы и страны, где они расположены
 SELECT 
     Club.name AS ClubName,
-    CONCAT(N'Club', Club.id, '.png') AS [Club Image],
+    CONCAT(N'Club', Club.id, '.webp') AS [Club Image],
     Country.name AS CountryName,
-    CONCAT(N'Country', Country.id, '.png') AS [Country Image]
+    CONCAT(N'Country', Country.id, '.webp') AS [Country Image]
 FROM Club, LocatedIn, Country
 WHERE MATCH(Club-(LocatedIn)->Country);
 
@@ -245,9 +245,9 @@ SELECT
     Fan.name AS FanName,
     CONCAT(N'Fan', Fan.id, '.webp') AS [Fan Image],
     Club.name AS ClubName,
-    CONCAT(N'Club', Club.id, '.png') AS [Club Image],
+    CONCAT(N'Club', Club.id, '.webp') AS [Club Image],
     Country.name AS CountryName,
-    CONCAT(N'Country', Country.id, '.png') AS [Country Image]
+    CONCAT(N'Country', Country.id, '.webp') AS [Country Image]
 FROM Fan, Supports, Club, LocatedIn, Country
 WHERE MATCH(Fan-(Supports)->Club-(LocatedIn)->Country);
 
@@ -259,7 +259,7 @@ SELECT
     Fan.id AS SourceID,
     CONCAT(N'Fan', Fan.id, '.webp') AS [Fan Image],
     Club.id AS TargetID,
-    CONCAT(N'Club', Club.id, '.png') AS [Club Image],
+    CONCAT(N'Club', Club.id, '.webp') AS [Club Image],
     'Supports' AS Relationship
 FROM Fan, Supports, Club
 WHERE MATCH(Fan-(Supports)->Club);
